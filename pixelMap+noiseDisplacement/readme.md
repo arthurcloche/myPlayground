@@ -11,5 +11,5 @@ images source : https://en.wikipedia.org/wiki/Mona_Lisa
 
 ![](data/mona_800x1192.jpg) ![](data/mona_after.png)
 
-Everything is done using p5.js : https://p5js.org/
+Everything is done using p5.js : https://p5js.org/ \
 Have fun with this and let me know if you make anything cool with this :)
