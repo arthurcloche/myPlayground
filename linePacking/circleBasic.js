@@ -1,6 +1,5 @@
-let x, y, gain;
+let x, y, z;
 let h, w;
-
 
 function setup() {
 
@@ -10,25 +9,26 @@ function setup() {
 
   fill(252);
   noStroke();
-  gain = 0;
+  z = 0;
 }
 
 function draw() {
   clear();
   background(25);
 
-  // You can play around with those values. It will always fill the canvas.
+  // You can play around with those values. Don't forget it's ^3 exponential :)
   h = 2;
   w = 3;
+  a = 1;
 
-  for (s = h; s < h * (h + 2) * (pow(w, 3)); s++) {
-    y = gain;
+  for (s = h; s < h * (h + 2) * (pow(w, 3))* (pow(a, 3)); s++) {
+    y = z;
     for (x = 0; x < (s * w); x++) {
 
-      ellipse(width * (x / (s * w)), y, width / (s * w))
+      ellipse(width * (x / (s * w)), y, width / (s * w)/a)
 
     }
-    gain += width / (s * w)
+    z += width / ((s * w)/a)
 
   }
 
