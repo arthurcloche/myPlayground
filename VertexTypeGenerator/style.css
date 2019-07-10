@@ -1,0 +1,27 @@
+.bottom {
+  position: fixed;
+  top:0;
+  left:0;
+  text-align:left;
+  padding-left:650px;
+  padding-top:420px;
+}
+
+textarea {
+	width: 100%;
+}
+
+#dropzone {
+  position: fixed;
+  top:0;
+  left:0;
+  border-style: solid;
+  text-align : center;
+  color : #ffffff;
+  /* background-color: #ccc; */
+  line-height : 400px;
+  margin-top : 5px;
+  margin-left : 5px;
+  width: 784px;
+  height: 384px;
+}
