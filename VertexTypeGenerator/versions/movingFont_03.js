@@ -1,80 +1,117 @@
-var ft;
-var points = [];
-var minX,minY;
-var maxX,maxY;
-var offX = 0;
-var offY = 0;
-
-
-
+let ft;
+let points = [];
+let minX,minY;
+let maxX,maxY;
+let offX = 0;
+let offY = 0;
+let sty = false;
+let inp;
+let kerns = [];
 
 function preload() {
-  ft = loadFont('data/MaisonMono-Bold.otf');
+  ft = loadFont('data/AtlasGrotesk-Bold.otf');
+
 }
 
+// function kernXY (a,b,c){
+//
+//   opentype.load("data/AtlasGrotesk-Bold.otf", function(err, font) {
+//
+//     let c = font.charToGlyph(a);
+//     let d = font.charToGlyph(b);
+//     let kern = font.getKerningValue(c, d);
+//     kerns.push(kern);
+//
+//
+//   });
+//
+//
+//
+//
+//
+// }
+
 function setup() {
-  createCanvas(800, 400,P2D);
+
+  createCanvas(800, 400,SVG);
   frameRate(24);
-  smooth(1);
   rectMode(CENTER);
-  stroke(255);
-  noFill(255);
-  strokeWeight(1.5);
   controls();
   // noLoop();
 
   inp = select("#textfield");
 
 
-
 }
+
+
+
 
 function draw() {
   clear();
+  let fw = 0;
+  kerni = [];
   background('BLUE');
+
+  if (sty == true){
+    noStroke();
+    fill(255);
+  }
+
+  if (sty == false){
+    stroke(255);
+    noFill();
+    strokeWeight(1.5);
+  }
 
   minX = minY = 99999;
   maxX = maxY = -99999;
 
   let s=str(inp.value());
   let l=int(s.length);
+
   let fts = ftsze.value();
   let offinc = fts/2;
-
-  // trying to center it, need to be working on
-  // translate(width/(l*l)-(fts/20)*l,height/2-(fts*copsy.value())/1.5-fts)
-
   // nudge
   let afxoff = dax.value()/100;
   let afyoff = dafy.value()/100;
+  let loffx = loffy = 0;
 
   translate(tslx.value(),tsly.value())
-  translate(offX,offY);
-
-  let lines = 0;
-
+  translate(width/2-offX,height/2-offY);
 
   push();
   // creating the letters
     for (let m = 0; m <copsx.value()+1; m++){
-      let copxoff = offinc*afxoff*l+(copsxoff.value()*m)+fts/10;
+      let copxoff = offinc*afxoff*l*m+(copsxoff.value()*m);
 
       for(let n = 0; n < copsy.value()+1; n++){
-      let copyoff = ((fts*0.75)*n)*afyoff+(copsyoff.value())*n;
-      translate((copsy.value()*offinc)*krnx.value(),0);
+      let copyoff = ((fts*0.75)*n)*afyoff+(copsyoff.value()*n);
+
       for (let t = 0; t < l; t++){
 
         let c = s.charAt(t);
-         if (c == '\n'){
-           c = '';
-           lines += 1;
-           copyoff += fts*0.75;
+
+         let prex = (copxoff+5)+afxoff;
+         let prey = (copyoff+5)+afyoff;
+         let bbox = bounds(c,prex,prey,fts);
+         let bxx = bbox.w*100;
+
+         if (c == ' '){
+
+           bxx = bbox.w*30
          }
 
-         let x = m*copxoff+(afxoff+(fts*krn.value()*t*1.05));
-         let y = fts/1.5*afyoff+copyoff+(fts*krny.value()*t);
+         let x = prex+fw;
+         fw += bxx+10;
+         let y = prey;
+
+         // console.log(kerns);
+
 
         createL(c,x,y,fts);
+
+        // console.log(fw);
 
   }
 
@@ -82,16 +119,16 @@ function draw() {
 }
 pop();
 
-let pt1 = minX*100* dax.value()/100 ;
-let pt2 = minY*100* dafy.value()/100 ;
-let pt3 = maxX*100* dax.value()/100 ;
-let pt4 = maxY*100* dafy.value()/100 ;
+let pt1 = minX* dax.value() ;
+let pt2 = minY* dafy.value() ;
+let pt3 = maxX* dax.value() ;
+let pt4 = maxY* dafy.value() ;
 
 let wB = pt3-pt1;
 let hB = pt4-pt2;
 
-offX = width/2 - wB / 2;
-offY = height/2 - hB / 2;
+offX = pt1+wB/2;
+offY = pt2+hB/2;
 
 // push();
 // strokeWeight(10);
@@ -110,8 +147,14 @@ offY = height/2 - hB / 2;
 //
 // pop();
 
+htmldom();
 
-// htmldom();
+
+
+// console.log(frameRate());
+// if (kerns.length > l){
+//
+// }
 
 }
 
@@ -123,8 +166,6 @@ var sinerSquare = sign * (1-pow(1-abs(sinus),slopeN));
 return sinerSquare;
 }
 
-
-
 function displacerX(x,y){
 
   this.yWave = dbx.value();
@@ -134,10 +175,10 @@ function displacerX(x,y){
   this.speed = dex.value();
   this.slope = dfx.value();
 
-  yWaver = sinEngine(this.offset, x, this.ribbonOffset,
+  xWaver = sinEngine(this.offset, x, this.ribbonOffset,
                      x, -this.speed, this.slope ) * this.yWave;
 
-  return yWaver;
+  return xWaver;
 
 }
 
@@ -163,6 +204,12 @@ function displacerY(x,y){
 
 // return sin(this.movey.a * y / this.movey.b + millis() / this.movey.c) *
 //             this.movey.d / (this.movey.e * this.movey.f)
+
+}
+
+function bounds (t, x, y, s){
+
+  return ft.textBounds(t, x / 100, y / 100, s / 100);
 
 }
 
@@ -246,6 +293,11 @@ function checkerT(t){
 
 }
 
+function checkerId(x,min,max,id){
+
+  return map(x,min,max,0,id)
+}
+
 function createL(t, x, y, s) {
 
   this.vari = variations.value();
@@ -256,9 +308,10 @@ function createL(t, x, y, s) {
   this.break = 0;
   this.breakb = 0;
   this.points = ft.textToPoints(this.txtS, x / 100, y / 100, s / 100, {
-    sampleFactor: 32,
+    sampleFactor: 36,
     simplifyThreshold: 0,
   });
+
 
 
   for (let i = 0; i < this.points.length; i++) {
@@ -266,7 +319,6 @@ function createL(t, x, y, s) {
       let pt = this.points[i];
 
       checkerP(pt);
-
 
       if (i < this.points.length - 1) {
       if (dist(this.points[i].x, this.points[i].y,
@@ -292,18 +344,14 @@ function createL(t, x, y, s) {
     beginShape();
     for (let i = 0; i < this.points.length; i++) {
       let lt = this.points[i];
-
-
       let xx = checkerX(lt.x,lt.y);
       let yy = checkerY(lt.x,lt.y);
-
+      // let idx = floor(checkerId(lt.x,minX,maxX,width/2));
+      // let idy = floor(checkerId(lt.y,minY,maxY,height/2));
       vertex(
-
         lt.x * dax.value() + displacerX(xx,yy),
         lt.y * dafy.value() + displacerY(xx,yy)
-
       );
-
     }
     endShape(CLOSE);
     pop();
@@ -321,29 +369,26 @@ function createL(t, x, y, s) {
 
       let xx = checkerX(lt.x,lt.y);
       let yy = checkerY(lt.x,lt.y);
-
+      // let idx = floor(checkerId(lt.x,minX,maxX,width/2));
+      // let idy = floor(checkerId(lt.y,minY,maxY,height/2));
       vertex(
-
         lt.x * dax.value() + displacerX(xx,yy),
         lt.y * dafy.value() + displacerY(xx,yy)
-
       );
-
     }
+
     beginContour();
     for (let i = 0; i < this.break; i++) {
       let lt = this.points[i];
 
       let xx = checkerX(lt.x,lt.y);
       let yy = checkerY(lt.x,lt.y);
-
+      // let idx = floor(checkerId(lt.x,minX,maxX,width/2));
+      // let idy = floor(checkerId(lt.y,minY,maxY,height/2));
       vertex(
-
         lt.x * dax.value() + displacerX(xx,yy),
         lt.y * dafy.value() + displacerY(xx,yy)
-
       );
-
     }
     endContour(CLOSE);
     endShape(CLOSE);
@@ -449,6 +494,23 @@ function createL(t, x, y, s) {
 
 }
 
+function dlPNG(){
+    save('movingType.png');
+}
+
+function dlSVG(){
+    save('movingType.svg');
+}
+
+function checkerSty (){
+
+    if (sty == true){
+      sty = false
+    } else {
+      sty = true
+    }
+
+}
 
 function htmldom() {
 
@@ -638,5 +700,16 @@ function controls() {
   createP('Offset y = ').position(20+domoffx*2, height+60+domoffy*2);
   krnydom = createP('').position(100+domoffx*2, height+60+domoffy*2);
 
+  spng = createButton('Save PNG');
+  spng.position(650, 470);
+  spng.mousePressed(dlPNG);
+
+  ssvg = createButton('Save SVG');
+  ssvg.position(650, 495);
+  ssvg.mousePressed(dlSVG);
+
+  fNoS = createButton('Fill / Stroke');
+  fNoS.position(650, 530);
+  fNoS.mousePressed(checkerSty);
 
 }
