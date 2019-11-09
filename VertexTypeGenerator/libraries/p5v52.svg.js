@@ -126,69 +126,69 @@
 
     //Some basic mappings for attributes and default values.
     STYLES = {
-        'strokeStyle':{
-            svgAttr : 'stroke', //corresponding svg attribute
-            canvas : 'BLACK', //canvas default
-            svg : 'none',       //svg default
-            apply : 'stroke'    //apply on stroke() or fill()
+        "strokeStyle":{
+            svgAttr : "stroke", //corresponding svg attribute
+            canvas : "#000000", //canvas default
+            svg : "none",       //svg default
+            apply : "stroke"    //apply on stroke() or fill()
         },
-        'fillStyle':{
-            svgAttr : 'fill',
-            canvas : 'BLACK',
+        "fillStyle":{
+            svgAttr : "fill",
+            canvas : "#000000",
             svg : null, //svg default is black, but we need to special case this to handle canvas stroke without fill
-            apply : 'fill'
+            apply : "fill"
         },
-        'lineCap':{
-            svgAttr : 'stroke-linecap',
-            canvas : 'butt',
-            svg : 'butt',
-            apply : 'stroke'
+        "lineCap":{
+            svgAttr : "stroke-linecap",
+            canvas : "butt",
+            svg : "butt",
+            apply : "stroke"
         },
-        'lineJoin':{
-            svgAttr : 'stroke-linejoin',
-            canvas : 'miter',
-            svg : 'miter',
-            apply : 'stroke'
+        "lineJoin":{
+            svgAttr : "stroke-linejoin",
+            canvas : "miter",
+            svg : "miter",
+            apply : "stroke"
         },
-        'miterLimit':{
-            svgAttr : 'stroke-miterlimit',
+        "miterLimit":{
+            svgAttr : "stroke-miterlimit",
             canvas : 10,
             svg : 4,
-            apply : 'stroke'
+            apply : "stroke"
         },
-        'lineWidth':{
-            svgAttr : 'stroke-width',
+        "lineWidth":{
+            svgAttr : "stroke-width",
             canvas : 1,
             svg : 1,
-            apply : 'stroke'
+            apply : "stroke"
         },
-        'globalAlpha': {
-            svgAttr : 'opacity',
+        "globalAlpha": {
+            svgAttr : "opacity",
             canvas : 1,
             svg : 1,
-            apply : 'fill stroke'
+            apply : "fill stroke"
         },
-        'font':{
+        "font":{
             //font converts to multiple svg attributes, there is custom logic for this
-            canvas : '10px sans-serif'
+            canvas : "10px sans-serif"
         },
-        'shadowColor':{
-            canvas : 'BLACK'
+        "shadowColor":{
+            canvas : "#000000"
         },
-        'shadowOffsetX':{
+        "shadowOffsetX":{
             canvas : 0
         },
-        'shadowOffsetY':{
+        "shadowOffsetY":{
             canvas : 0
         },
-        'shadowBlur':{
+        "shadowBlur":{
             canvas : 0
         },
-        'textAlign':{
-            canvas : 'start'
+        "textAlign":{
+            canvas : "start"
         },
-        'textBaseline':{
-            canvas : 'alphabetic'
+        "textBaseline":{
+            canvas : "alphabetic"
         }
     };
 
