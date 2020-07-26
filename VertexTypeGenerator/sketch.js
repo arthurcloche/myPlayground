@@ -1,43 +1,45 @@
 let ft;
-let points = [];
+
 let minX, minY;
 let maxX, maxY;
 let offX = 0;
 let offY = 0;
 let charDim = [];
 let sty = false;
+let hi = false;
 let obj = [];
 let px, py;
 
 function loadChar(font) {
-  const s = str('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789éàâè.:,;!?/ (){}[]=');
-  const len = int(s.length);
-  const ft = font;
+  const s = str("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789éàâè.:,;!?-/ (){}[]=_'");
+  let len = int(s.length);
+  let ft = font;
   const fts = 10;
   for (i = 0; i < len; i++) {
-    const char = s.charAt(i);
+    let char = s.charAt(i);
     charDim[char] = bounds(char, 0, 0, fts, ft);
   }
 }
 
 function bounds(t, x, y, s, font) {
-  const char = str(t);
+  let char = str(t);
   const ft = font;
-  const bbox = ft.textBounds(char, x, y, s)
+  let bbox = ft.textBounds(char, x, y, s)
   return bbox.w;
 }
 
 // adjusting the kerning for specific letters
 function letKern (letter,dflt) {
-  const kern = dflt;
+  let kern = dflt;
   let space = 0;
-
-  const c = letter;
+  let c = letter;
 
   if (c == 'w' || c == 'y'|| c == 'a'|| c == 'e') {
     space = 0;
   } else if (c == 'h' || c == 'l') {
     space = 1.8 * kern;
+  } else if (c == 'Y') {
+    space = -kern*3.2;
   } else {
     space = kern;
   }
@@ -47,17 +49,17 @@ function letKern (letter,dflt) {
 }
 
 function preload() {
-  ft = loadFont('data/AtlasGrotesk-Bold.otf');
+  ft = loadFont('data/Marcel-Bold.otf');
 }
 
 
 function setup() {
-  createCanvas(windowWidth, windowHeight,SVG );
+  createCanvas(windowWidth, windowHeight,);
+  pixelDensity(1);
   frameRate(24);
   smooth(1);
-  stroke(255);
   noFill();
-  strokeWeight(1.5);
+  strokeWeight(1);
   controls();
 
   loadChar(ft);
@@ -109,10 +111,13 @@ function draw() {
   }
 
   let fts = fontSize;
-  var interline = fts / 1.2;
+  var interline = fts / 1.2 + spaceBtwLine ;
 
+  // nudge
   push();
   translate(sceneNudgeX, sceneNudgeY)
+
+  // center everything in the canvas
   translate(width / 2 - offX, height / 2 - offY);
 
   let defaultkern = 12;
@@ -127,6 +132,8 @@ function draw() {
       o = obj[i][j];
       let c = o.ltr;
       let l = o.li;
+
+
       createL(c, px, py, fts);
       spaceBetweenChars = letKern(c,defaultkern);
       px += o.dim / 10 * fts  + spaceBetweenChars + kern;
@@ -142,6 +149,7 @@ function draw() {
   let hB = pt4 - pt2;
   offX = pt1 + wB / 2;
   offY = pt2 + hB / 2;
+
   htmldom();
 
 }
@@ -163,9 +171,8 @@ function displacerX(x, y) {
   this.frequency = waveFrequencyX;
   this.speed = waveSpeedX;
   this.slope = waveSlopeX;
-  this.subvar = sceneSubVariations;
-  this.x = checkerX(x,y,this.subvar);
-  this.y = checkerY(x,y,this.subvar);
+  this.x = x;
+  this.y = y;
 
   xWaver = sinEngine(this.offset, this.x, this.frequency,
     this.y, -this.speed, this.slope) * this.amplitude;
@@ -174,19 +181,15 @@ function displacerX(x, y) {
 
 }
 
-
-
 function displacerY(x, y) {
-
 
   this.amplitude = waveAmplitudeY;
   this.offset = waveDisplaceY;
   this.frequency = waveFrequencyY;
   this.speed = waveSpeedY;
   this.slope = waveSlopeY;
-  this.subvar = sceneSubVariations;
-  this.x = checkerX(x,y,this.subvar);
-  this.y = checkerY(x,y,this.subvar);
+  this.x = x;
+  this.y = y;
 
   yWaver = sinEngine(this.offset, this.x, this.frequency,
     this.y, -this.speed, this.slope) * this.amplitude;
@@ -201,109 +204,17 @@ function displacerY(x, y) {
 
 }
 
-function checkerSty() {
-
-  if (sty == true) {
-    sty = false
-  } else {
-    sty = true
-  }
-
-}
-
-function checkerP(pt) {
-
-  if (pt.x < minX) {
-    minX = pt.x
-  }
-  if (pt.y < minY) {
-    minY = pt.y
-  }
-  if (pt.x > maxX) {
-    maxX = pt.x
-  }
-  if (pt.y > maxY) {
-    maxY = pt.y
-  }
-}
-
-function checkerX(x, y, value) {
-  this.value = value;
-
-  if (this.value == 1 || this.value == 3) {
-    return y
-  }
-
-  if (this.value == 2 || this.value == 4) {
-    return x
-  }
-
-}
-
-function checkerY(x, y, value) {
-  this.value = value;
-
-  if (this.value == 1 || this.value == 2) {
-    return y
-  }
-
-  if (this.value == 3 || this.value == 4) {
-    return x
-  }
-}
-
-function checkerT(t) {
-
-  if (t === 'i' ||
-    t === 'j' ||
-    t === 'é' ||
-    t === 'è' ||
-    t === 'ê' ||
-    t === 'à' ||
-    t === 'î' ||
-    t === 'ú' ||
-    t === 'ô' ||
-    t === 'â' ||
-    t === 'É' ||
-    t === 'Ê' ||
-    t === 'Â' ||
-    t === '?' ||
-    t === '!' ||
-    t === ':' ||
-    t === ';' ||
-    t === '=' ||
-    t === '¿' ||
-    t === '±' ||
-    t === '“' ||
-    t === '¡' ||
-    t === 'ﬁ' ||
-    t === '≈' ||
-    t === '«' ||
-    t === '»' ||
-    t === 'Ô' ||
-    t === 'Ú' ||
-    t === 'À' ||
-    t === 'È' ||
-    t === 'Î' ||
-    t === '÷'
-
-  ) {
-    return true;
-  }
-
-}
-
 function createL(t, x, y, s) {
 
   this.vari = sceneVariations;
   this.txtS = t;
   this.hasdot = checkerT(t);
   this.hcnt = 0;
-  this.tol = 20;
+  this.tol = 15;
   this.break = 0;
   this.breakb = 0;
   this.points = ft.textToPoints(this.txtS, x / 100, y / 100, s / 100, {
-    sampleFactor: 18,
+    sampleFactor: 14,
     simplifyThreshold: 0,
   });
 
@@ -311,6 +222,7 @@ function createL(t, x, y, s) {
   for (let i = 0; i < this.points.length; i++) {
 
     let pt = this.points[i];
+
     checkerP(pt);
 
     if (i < this.points.length - 1) {
@@ -609,7 +521,6 @@ function createL(t, x, y, s) {
       let yy = checkerY(lt.x, lt.y,this.vari);
 
       vertex(
-
         lt.x * glyphDistortX + displacerX(xx, yy),
         lt.y * glyphDistortY + displacerY(xx, yy)
 
@@ -625,10 +536,8 @@ function createL(t, x, y, s) {
       let yy = checkerY(lt.x, lt.y,this.vari);
 
       vertex(
-
         lt.x * glyphDistortX + displacerX(xx, yy),
         lt.y * glyphDistortY + displacerY(xx, yy)
-
       );
     }
     endContour(CLOSE);
@@ -639,390 +548,7 @@ function createL(t, x, y, s) {
 
 }
 
-function dlSVG(){
-    save('movingType.svg');
-}
-
-function dlPNG(){
-    save('movingType.png');
-}
-
-function resetSliders(){
-
-glyphDistortXslider.value(100);
-glyphDistortYslider.value(100);
-
-waveAmplitudeXslider.value(60);
-waveAmplitudeYslider.value(30);
-
-waveDisplaceXslider.value(0.26);
-waveDisplaceYslider.value(0.26);
-
-waveFrequencyXslider.value(0.2);
-waveFrequencyYslider.value(0.2);
-
-waveSpeedXslider.value(0.05);
-waveSpeedYslider.value(0.05);
-
-waveSlopeXslider.value(1.2);
-waveSlopeYslider.value(1.2);
-
-sceneNudgeXslider.value(0);
-sceneNudgeYslider.value(0);
-
-fontSizeslider.value(200);
-scenevariationsslider.value(1);
-
-spaceBtwLineslider.value(0);
-spaceBtwCharslider.value(0);
-
-
-}
-
-function iniSliders(){
-
-glyphDistortX = glyphDistortXslider.value();
-glyphDistortY = glyphDistortYslider.value();
-
-waveAmplitudeX = waveAmplitudeXslider.value();
-waveAmplitudeY = waveAmplitudeYslider.value();
-
-waveDisplaceX = waveDisplaceXslider.value();
-waveDisplaceY = waveDisplaceYslider.value();
-
-waveFrequencyX = waveFrequencyXslider.value();
-waveFrequencyY = waveFrequencyYslider.value();
-
-waveSpeedX = waveSpeedXslider.value();
-waveSpeedY = waveSpeedYslider.value();
-
-waveSlopeX = waveSlopeXslider.value();
-waveSlopeY = waveSlopeYslider.value();
-//
-// // charOffsetX = charOffsetXslider.value();
-// // charOffsetY = charOffsetYslider.value();
-//
-sceneNudgeX = sceneNudgeXslider.value();
-sceneNudgeY = sceneNudgeYslider.value();
-
-fontSize = fontSizeslider.value();
-sceneVariations = scenevariationsslider.value();
-sceneSubVariations = scenesubvariationsslider.value();
-
-spaceBtwLine = spaceBtwLineslider.value();
-spaceBtwChar = spaceBtwCharslider.value();
-
-fontColor = color('NAVY');
-backgroundColor = color('CORAL');
-
-}
-
-function htmldom() {
-
-  glyphDistortXsliderdom.html(glyphDistortX);
-  glyphDistortYsliderdom.html(glyphDistortY);
-
-  waveAmplitudeXsliderdom.html(waveAmplitudeX);
-  waveAmplitudeYsliderdom.html(waveAmplitudeY);
-
-  waveDisplaceXsliderdom.html(waveDisplaceX.toFixed(2));
-  waveDisplaceYsliderdom.html(waveDisplaceY.toFixed(2));
-
-  waveFrequencyXsliderdom.html(waveFrequencyX);
-  waveFrequencyYsliderdom.html(waveFrequencyY);
-
-  waveSpeedXsliderdom.html(waveSpeedX);
-  waveSpeedYsliderdom.html(waveSpeedY);
-
-  waveSlopeXsliderdom.html(waveSlopeX);
-  waveSlopeYsliderdom.html(waveSlopeY);
-
-  sceneNudgeXsliderdom.html(sceneNudgeX);
-  sceneNudgeYsliderdom.html(sceneNudgeY);
-
-  fontSizesliderdom.html(fontSize);
-  scenevariationssliderdom.html(sceneVariations);
-  scenesubvariationssliderdom.html(sceneSubVariations)
-
-  spaceBtwLinesliderdom.html(spaceBtwLine);
-  spaceBtwCharsliderdom.html(spaceBtwChar);
-
-}
-
-function controls() {
-
-  let domx = 120;
-  let domy = 36
-  let subdomy = 12;
-
-  glyphDistortXslider = createSlider(10, 300, 100, 1).position(25, 30).style('width', '100px');
-
-  createP('Glyph X').position(25, 5)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-  glyphDistortXsliderdom = createP('').position(100, 5)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-
-  glyphDistortYslider = createSlider(10, 300, 100, 1).position(25, 30+domy).style('width', '100px');
-  createP('Glyph Y').position(25, 5+domy)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-  glyphDistortYsliderdom = createP('').position(100, 5+domy)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-
-
-  waveAmplitudeXslider = createSlider(0, 100, 60, 1).position(25, 30+domy*2+subdomy).style('width', '100px');
-  createP('WaveAmp X').position(25, 5+domy*2+subdomy)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-  waveAmplitudeXsliderdom = createP('').position(100, 5+domy*2+subdomy)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-
-  waveAmplitudeYslider = createSlider(0, 100, 30, 1).position(25, 30+domy*3+subdomy).style('width', '100px');
-  createP('WaveAmp Y').position(25, 5+domy*3+subdomy)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-  waveAmplitudeYsliderdom = createP('').position(100, 5+domy*3+subdomy)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-
-
-  waveDisplaceXslider = createSlider(-PI, PI, .26, 0.01).position(25, 30+domy*4+subdomy*2).style('width', '100px');
-  createP('WaveOff X').position(25, 5+domy*4+subdomy*2)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-  waveDisplaceXsliderdom = createP('').position(100, 5+domy*4+subdomy*2)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-
-  waveDisplaceYslider = createSlider(-PI, PI, .26, 0.01).position(25, 30+domy*5+subdomy*2).style('width', '100px');
-  createP('WaveOff Y').position(25, 5+domy*5+subdomy*2)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-  waveDisplaceYsliderdom = createP('').position(100, 5+domy*5+subdomy*2)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-
-
-  waveFrequencyXslider = createSlider(0, PI, 0.2, 0.1);
-  waveFrequencyXslider.position(25, 30+domy*6+subdomy*3);
-  waveFrequencyXslider.style('width', '100px');
-  createP('WaveFreq X').position(25, 5+domy*6+subdomy*3)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-  waveFrequencyXsliderdom = createP('').position(100, 5+domy*6+subdomy*3)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-
-  waveFrequencyYslider = createSlider(0, PI, 0.2, 0.1);
-  waveFrequencyYslider.position(25, 30+domy*7+subdomy*3);
-  waveFrequencyYslider.style('width', '100px');
-  createP('WaveFreq Y').position(25, 5+domy*7+subdomy*3)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-  waveFrequencyYsliderdom = createP('').position(100, 5+domy*7+subdomy*3)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-
-
-  waveSpeedXslider = createSlider(0, 0.3, 0.05, 0.01);
-  waveSpeedXslider.position(25, 30+domy*8+subdomy*4);
-  waveSpeedXslider.style('width', '100px');
-  createP('WaveSpeed X').position(25, 5+domy*8+subdomy*4)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-  waveSpeedXsliderdom = createP('').position(100, 5+domy*8+subdomy*4)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-
-  waveSpeedYslider = createSlider(0, 0.3, 0.05, 0.01);
-  waveSpeedYslider.position(25, 30+domy*9+subdomy*4);
-  waveSpeedYslider.style('width', '100px');
-  createP('WaveSpeed Y').position(25, 5+domy*9+subdomy*4)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-  waveSpeedYsliderdom = createP('').position(100, 5+domy*9+subdomy*4)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-
-
-  waveSlopeXslider = createSlider(0, 4, 1.2, 0.1);
-  waveSlopeXslider.position(25, 30+domy*10+subdomy*5);
-  waveSlopeXslider.style('width', '100px');
-  createP('WaveSlope X').position(25, 5+domy*10+subdomy*5)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-  waveSlopeXsliderdom = createP('').position(100, 5+domy*10+subdomy*5)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-
-  waveSlopeYslider = createSlider(0, 4, 1.2, 0.1);
-  waveSlopeYslider.position(25, 30+domy*11+subdomy*5);
-  waveSlopeYslider.style('width', '100px');
-  createP('WaveSlope Y').position(25, 5+domy*11+subdomy*5)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-  waveSlopeYsliderdom = createP('').position(100, 5+domy*11+subdomy*5)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-
-
-  sceneNudgeXslider = createSlider(-width, width, 0, 1);
-  sceneNudgeXslider.position(25+domx, 30);
-  sceneNudgeXslider.style('width', '100px');
-  createP('Nudge X').position(25+domx, 5)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-  sceneNudgeXsliderdom = createP('').position(100+domx, 5)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-
-  sceneNudgeYslider = createSlider(-height, height, 0, 1);
-  sceneNudgeYslider.position(25+domx, 30+domy);
-  sceneNudgeYslider.style('width', '100px');
-  createP('Nudge Y').position(25+domx, 5+domy)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-  sceneNudgeYsliderdom = createP('').position(100+domx, 5+domy)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-
-
-  spaceBtwLineslider = createSlider(-100, 100, 0, 1);
-  spaceBtwLineslider.position(25+domx, 30+domy*2+subdomy);
-  spaceBtwLineslider.style('width', '100px');
-  createP('LineSpace').position(25+domx, 5+domy*2+subdomy)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-  spaceBtwLinesliderdom = createP('').position(100+domx, 5+domy*2+subdomy)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-
-  spaceBtwCharslider = createSlider(0, 100, 0, 1);
-  spaceBtwCharslider.position(25+domx, 30+domy*3+subdomy);
-  spaceBtwCharslider.style('width', '100px');
-  createP('GlyphSpace').position(25+domx, 5+domy*3+subdomy)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-  spaceBtwCharsliderdom = createP('').position(100+domx, 5+domy*3+subdomy)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-
-
-  fontSizeslider = createSlider(85, 600, 200, 1);
-  fontSizeslider.position(25+domx, 30+domy*4+subdomy*2);
-  fontSizeslider.style('width', '100px');
-  createP('Font Size').position(25+domx, 5+domy*4+subdomy*2)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-  fontSizesliderdom = createP('').position(100+domx, 5+domy*4+subdomy*2)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-
-  scenevariationsslider = createSlider(1, 4, 1, 1);
-  scenevariationsslider.position(25+domx, 30+domy*5+subdomy*2);
-  scenevariationsslider.style('width', '40px');
-  createP('Var').position(25+domx, 5+domy*5+subdomy*2)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-  scenevariationssliderdom = createP('').position(55+domx, 5+domy*5+subdomy*2)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-
-  scenesubvariationsslider = createSlider(1, 4, 1, 1);
-  scenesubvariationsslider.position(80+domx, 30+domy*5+subdomy*2);
-  scenesubvariationsslider.style('width', '40px');
-  createP('SubVar').position(70+domx, 5+domy*5+subdomy*2)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-  scenesubvariationssliderdom = createP('').position(120+domx, 5+domy*5+subdomy*2)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-
-
-  fNoS = createButton('Fill / Stroke');
-  fNoS.position(25+domx, domy*7.5);
-  fNoS.mousePressed(checkerSty);
-
-  spng = createButton('Save PNG');
-  spng.position(25+domx, domy*8.5);
-  spng.mousePressed(dlPNG);
-
-  ssvg = createButton('Save SVG');
-  ssvg.position(25+domx, domy*9.5);
-  ssvg.mousePressed(dlSVG);
-
-  reset = createButton('Reset');
-  reset.position(25+domx, domy*10.5);
-  reset.mousePressed(resetSliders);
-
-  // hello = createButton('Hello!');
-  // hello.position(25+domx, domy*13.3);
-  // hello.mousePressed(checkerHello);
-
-}
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
-
-// function editSlider(object,_px,_py,_width){
-//
-//   this.object = object;
-//   this.px = _px;
-//   this.py = _py;
-//   this.width = str(_width)+'px'|| undefined;
-//
-//   this.object.position(this.px,this.py).style('width',this.width);
-//
-// }
-//
-// function editP(object,_px,_py,_size,_font,_color){
-//
-//   this.object = object;
-//   this.px = _px;
-//   this.py = _py;
-//   this._color = str(_color) || undefined;
-//   this.size = str(_size)+'px' || undefined;
-//   this.font = str(_font) || undefined;
-//
-//   this.object.position(this.px,this.py)
-//     .style('color', this._color)
-//     .style('font-size', this.size)
-//     .style('font-family', this.font);
-//
-// }
-//
-//
-// function editButton(object,_call,_px,_py,_width,_height){
-//
-//   this.object = object;
-//   this.call = _call;
-//   this.px = _px;
-//   this.py = _py;
-//   this.width = str(_width)+'px' || undefined;
-//   this.height = str(_height)+'px' || undefined;
-//
-//   this.object.position(this.px,this.py)
-//     .style('width',this.width)
-//     .style('height',this.height)
-//     .mousePressed(this.call);
-//
-// }
-//
-// function editColorPicker(object,_px,_py,_width,_height){
-//
-//   this.object = object;
-//   this.px = _px;
-//   this.py = _py;
-//   this.width = str(_width)+'px' || undefined;
-//   this.height = str(_height)+'px' || undefined;
-//
-//   this.object.position(this.px,this.py)
-//     .style('width',this.width)
-//     .style('height',this.height)
-//
-// }

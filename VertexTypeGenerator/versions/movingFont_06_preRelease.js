@@ -12,27 +12,27 @@ let px, py;
 
 function loadChar(font) {
   const s = str('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789éàâè.:,;!?/ (){}[]=');
-  const len = int(s.length);
-  const ft = font;
+  let len = int(s.length);
+  let ft = font;
   const fts = 10;
   for (i = 0; i < len; i++) {
-    const char = s.charAt(i);
+    let char = s.charAt(i);
     charDim[char] = bounds(char, 0, 0, fts, ft);
   }
 }
 
 function bounds(t, x, y, s, font) {
-  const char = str(t);
+  let char = str(t);
   const ft = font;
-  const bbox = ft.textBounds(char, x, y, s)
+  let bbox = ft.textBounds(char, x, y, s)
   return bbox.w;
 }
 
 // adjusting the kerning for specific letters
 function letKern (letter,dflt) {
-  const kern = dflt;
-  const space = 0;
-  const c = letter;
+  let kern = dflt;
+  let space = 0;
+  let c = letter;
 
   if (c == 'w' || c == 'y'|| c == 'a'|| c == 'e') {
     space = 0;
@@ -52,7 +52,8 @@ function preload() {
 
 
 function setup() {
-  createCanvas(windowWidth, windowHeight,SVG );
+  createCanvas(windowWidth, windowHeight,  );
+  pixelDensity(1);
   frameRate(24);
   smooth(1);
   stroke(255);
@@ -165,21 +166,7 @@ function draw() {
 
   htmldom();
 
-  if (hi == true) {
-      push();
-      let dimx = width/2;
-      let dimy = height/3;
-      translate(width/2-dimx/2,height/2-dimy/2)
-      fill(0,0,255);
-      stroke(255);
-      strokeWeight(1.5);
-      rect(0,0,dimx,dimy);
-      // createP('Hello World!').position(25, 25).style('display','inline')
-      pop();
-  } else if (hi == false){
-    createP('Hello World!').position(25, 25).style('display','none')
 
-  }
 
 
 }
@@ -201,9 +188,9 @@ function displacerX(x, y) {
   this.frequency = waveFrequencyX;
   this.speed = waveSpeedX;
   this.slope = waveSlopeX;
-  this.subvar = sceneSubVariations;
-  this.x = checkerX(x,y,this.subvar);
-  this.y = checkerY(x,y,this.subvar);
+  // this.subvar = sceneSubVariations;
+  this.x = x;
+  this.y = y;
 
   xWaver = sinEngine(this.offset, this.x, this.frequency,
     this.y, -this.speed, this.slope) * this.amplitude;
@@ -222,9 +209,9 @@ function displacerY(x, y) {
   this.frequency = waveFrequencyY;
   this.speed = waveSpeedY;
   this.slope = waveSlopeY;
-  this.subvar = sceneSubVariations;
-  this.x = checkerX(x,y,this.subvar);
-  this.y = checkerY(x,y,this.subvar);
+  // this.subvar = sceneSubVariations;
+  this.x = x;
+  this.y = y;
 
   yWaver = sinEngine(this.offset, this.x, this.frequency,
     this.y, -this.speed, this.slope) * this.amplitude;
@@ -249,15 +236,7 @@ function checkerSty() {
 
 }
 
-function checkerHello() {
 
-  if (hi == true) {
-    hi = false
-  } else {
-    hi = true
-  }
-
-}
 
 function checkerP(pt) {
 
@@ -751,22 +730,18 @@ waveSpeedY = waveSpeedYslider.value();
 
 waveSlopeX = waveSlopeXslider.value();
 waveSlopeY = waveSlopeYslider.value();
-//
-// // charOffsetX = charOffsetXslider.value();
-// // charOffsetY = charOffsetYslider.value();
-//
+
 sceneNudgeX = sceneNudgeXslider.value();
 sceneNudgeY = sceneNudgeYslider.value();
 
 fontSize = fontSizeslider.value();
 sceneVariations = scenevariationsslider.value();
-sceneSubVariations = scenesubvariationsslider.value();
 
 spaceBtwLine = spaceBtwLineslider.value();
 spaceBtwChar = spaceBtwCharslider.value();
 
-fontColor = color('NAVY');
-backgroundColor = color('CORAL');
+fontColor = color('WHITE');
+backgroundColor = color('BLACK');
 
 }
 
@@ -795,7 +770,7 @@ function htmldom() {
 
   fontSizesliderdom.html(fontSize);
   scenevariationssliderdom.html(sceneVariations);
-  scenesubvariationssliderdom.html(sceneSubVariations)
+  // scenesubvariationssliderdom.html(sceneSubVariations)
 
   spaceBtwLinesliderdom.html(spaceBtwLine);
   spaceBtwCharsliderdom.html(spaceBtwChar);
@@ -808,7 +783,8 @@ function controls() {
   let domy = 36
   let subdomy = 12;
 
-  glyphDistortXslider = createSlider(10, 300, 100, 1).position(25, 30).style('width', '100px');
+  glyphDistortXslider = createSlider(10, 300, 100, 1).
+  position(25, 30).style('width', '100px');
   createP('Glyph X').position(25, 5)
   .style('color','#ffffff').style('font-size','11px')
   .style('font-family','Courier');
@@ -963,7 +939,7 @@ function controls() {
   .style('color','#ffffff').style('font-size','11px')
   .style('font-family','Courier');
 
-  spaceBtwCharslider = createSlider(0, 100, 0, 1);
+  spaceBtwCharslider = createSlider(0, 100, 5, 1);
   spaceBtwCharslider.position(25+domx, 30+domy*3+subdomy);
   spaceBtwCharslider.style('width', '100px');
   createP('GlyphSpace').position(25+domx, 5+domy*3+subdomy)
@@ -972,7 +948,6 @@ function controls() {
   spaceBtwCharsliderdom = createP('').position(100+domx, 5+domy*3+subdomy)
   .style('color','#ffffff').style('font-size','11px')
   .style('font-family','Courier');
-
 
   fontSizeslider = createSlider(85, 600, 200, 1);
   fontSizeslider.position(25+domx, 30+domy*4+subdomy*2);
@@ -986,21 +961,11 @@ function controls() {
 
   scenevariationsslider = createSlider(1, 4, 1, 1);
   scenevariationsslider.position(25+domx, 30+domy*5+subdomy*2);
-  scenevariationsslider.style('width', '40px');
+  scenevariationsslider.style('width', '100px');
   createP('Var').position(25+domx, 5+domy*5+subdomy*2)
   .style('color','#ffffff').style('font-size','11px')
   .style('font-family','Courier');
   scenevariationssliderdom = createP('').position(55+domx, 5+domy*5+subdomy*2)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-
-  scenesubvariationsslider = createSlider(1, 4, 1, 1);
-  scenesubvariationsslider.position(80+domx, 30+domy*5+subdomy*2);
-  scenesubvariationsslider.style('width', '40px');
-  createP('SubVar').position(70+domx, 5+domy*5+subdomy*2)
-  .style('color','#ffffff').style('font-size','11px')
-  .style('font-family','Courier');
-  scenesubvariationssliderdom = createP('').position(120+domx, 5+domy*5+subdomy*2)
   .style('color','#ffffff').style('font-size','11px')
   .style('font-family','Courier');
 
@@ -1020,19 +985,6 @@ function controls() {
   reset = createButton('Reset');
   reset.position(25+domx, domy*10.5);
   reset.mousePressed(resetSliders);
-
-  hello = createButton('Hello!');
-  hello.position(25+domx, domy*13.3);
-  hello.mousePressed(checkerHello);
-
-  // fontColorpicker = createColorPicker('WHITE');
-  // fontColorpicker.position(25+domx, domy*11.5);
-  // fontColorpicker.style('width', '20px');
-  //
-  // backgroundColorpicker = createColorPicker('BLUE');
-  // backgroundColorpicker.position(60+domx, domy*11.5);
-  // backgroundColorpicker.style('width', '20px');
-
 
 }
 

@@ -7,23 +7,37 @@
   padding-bottom:40px;
 }
 
+h1 {
+  font-family:'Arial', monospace;
+  font-size: 14px;
+  font-weight: 100;
+  text-align:left;
+  color: #000;
+  background-color:#fff;
+}
 
+h2 {
+  font-family:'Arial', monospace;
+  font-size: 8px;
+  font-weight: 300;
+  text-align: center;
+  letter-spacing: 5px;
+  color: #fff;
+  margin-top:-2px;
+  text-transform:uppercase;
+}
+
+p {
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 300;
+  color: #f0f0f0;
+}
+
+.slug {
+  color:#0000FF;
+}
 
 textarea {
 	width: 100%;
-}
-
-#dropzone {
-  position: fixed;
-  top:0;
-  left:0;
-  border-style: solid;
-  text-align : center;
-  color : #ffffff;
-  /* background-color: #ccc; */
-  line-height : 400px;
-  margin-top : 5px;
-  margin-left : 5px;
-  width: 784px;
-  height: 384px;
 }
